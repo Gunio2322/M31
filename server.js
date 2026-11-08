@@ -47,7 +47,7 @@ async function connectDevice() {
 }
 connectDevice();
 
-// Middleware: upewnij się, że jest połączenie przed każdym żądaniem do urządzenia
+// Middleware: upewnij się, że jest połączenie przed każdym żądaniem do urząbuf.writeUInt16BE(lo, 2); zapisuje wartość lo od pozycji 2, ponieważ pierwszy rejestr zajmuje bajty 0 i 1. W ten sposób dwa rejestry 16-bitowe wypełniają cały bufor o rozmiarze 4 bajtów, który może następnie zostać odczytany jako jedna 32-bitowa liczba typu float.dzenia
 async function ensureConnected(req, res, next) {
   if (!connected || !client.isOpen) {
     return res.status(503).json({ error: 'Brak połączenia z urządzeniem Modbus' });
@@ -72,6 +72,8 @@ app.get('/api/di', ensureConnected, async (req, res) => {
   }
 });
 
+
+
 // ================== DO — odczyt stanu wyjść ==================
 // GET /api/do -> { DO1: bool, DO2: bool, DO3: bool, DO4: bool }
 app.get('/api/do', ensureConnected, async (req, res) => {
@@ -88,6 +90,8 @@ app.get('/api/do', ensureConnected, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+
 
 // ================== DO — sterowanie pojedynczym wyjściem ==================
 // POST /api/do/:channel   body: { "state": true|false }
@@ -113,6 +117,8 @@ app.post('/api/do/:channel', ensureConnected, async (req, res) => {
   }
 });
 
+
+
 // ================== DO — sterowanie wszystkimi wyjściami naraz ==================
 // POST /api/do   body: { "states": [true, false, true, false] }  // DO1..DO4
 app.post('/api/do', ensureConnected, async (req, res) => {
@@ -127,6 +133,8 @@ app.post('/api/do', ensureConnected, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+
 
 // ================== AI — odczyt wartości całkowitej (0-20000 = 0-20mA) ==================
 // GET /api/ai -> { AI1: {raw, mA}, AI2: {...}, ... }
@@ -143,6 +151,9 @@ app.get('/api/ai', ensureConnected, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+
+
 
 // ================== AI — odczyt wartości zmiennoprzecinkowej (mA, IEEE754) ==================
 // GET /api/ai/float -> { AI1: mA, AI2: mA, AI3: mA, AI4: mA }
@@ -165,6 +176,8 @@ app.get('/api/ai/float', ensureConnected, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+
 
 // ================== Zbiorczy odczyt wszystkiego naraz ==================
 // GET /api/status -> DI + DO + AI w jednej odpowiedzi
@@ -194,6 +207,8 @@ app.get('/api/status', ensureConnected, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+
 
 // ================== Healthcheck ==================
 app.get('/api/health', (req, res) => {
