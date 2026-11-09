@@ -22,13 +22,13 @@ const SLAVE_ID = parseInt(process.env.M31_SLAVE_ID || '1', 10);
 const client = new ModbusRTU();
 let connected = false;
 
-// ---- Adresy rejestrów (hex) — 1:1 z tabelami z instrukcji Ebyte M31 ----
+// ---- Adresy Modbus (hex), zgodne z tabelami z instrukcji Ebyte M31 ----
 const ADDR = {
-  DI: 0x0000,        // DI1-DI4, FC 0x02, Zone 1
-  DO: 0x0000,        // DO1-DO4, FC 0x01 (odczyt) / 0x05,0x0F (zapis), Zone 0
-  AI_INT: 0x0000,    // AI1-AI4 (wartość całkowita 0-20000), FC 0x04, Zone 3
-  AI_FLOAT: 0x03E8,  // AI1-AI4 (float, 2 rej./kanał), FC 0x04, Zone 3
-  DO_CHANNELS: { 1: 0x0000, 2: 0x0001, 3: 0x0002, 4: 0x0003 }, // pojedyncze DO
+  DI: 0x0000,        // DI1-DI4: wejścia dyskretne, odczyt FC 0x02 (Zone 1)
+  DO: 0x0000,        // DO1-DO4: cewki, odczyt FC 0x01, zapis FC 0x05/0x0F (Zone 0)
+  AI_INT: 0x0000,    // AI1-AI4: wartości całkowite, odczyt FC 0x04 (Zone 3)
+  AI_FLOAT: 0x03E8,  // AI1-AI4: wartości IEEE 754, 2 rejestry na kanał, FC 0x04 (Zone 3)
+  DO_CHANNELS: { 1: 0x0000, 2: 0x0001, 3: 0x0002, 4: 0x0003 }, // adresy cewek DO1-DO4
 };
 
 async function connectDevice() {
